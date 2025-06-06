@@ -39,27 +39,18 @@ design_innovation_task:
 
 reporting_task:
   description: >
-    Summarize and consolidate the key findings, insights, and recommendations produced by the team into a clear, concise, and client-ready report.
-    collaborate with all agents to ensure that every insight is accurately represented.
-  expected_output: >
-    Deliver a market analysis report, customer insight report, or new product concept report based on the client's needs. The report should be detailed, well-supported with evidence, and logically structured, providing valuable market insights and strategic recommendations to the client.
-  agent: reporter
+    1.analyze the client's needs:
+      {query}
 
-
-management_task:
-  description: >
-    Coordinate Cosmetic Market Researcher, Customer Insight Analyst, Product Designer, and Reporter to deliver client's need:
+    2. collaborate with relevant agents to ensure that every insight is accurately represented.
     
+    Summarize and consolidate the key findings, insights, and recommendations produced by the team into a comprehensive, concise, and client-ready report.
+  expected_output: >
+    Deliver a market analysis report, customer insight report, or new product concept report based on the client's need:
+
     {query}
 
-    think carefully about the client's needs, and turn to relevant agents for the deliverable. 
-    
-    evaluate the output from Market Research Reporter and Insight Synthesizer based on the following criterion:
-    - align with the client's needs? 
-    - comprehensive with concise style?
-    if not, askt the Market Research Reporter and Insight Synthesizer to rewrite.
-  expected_output: >
-    a comprehensive report provided by the Market Research Reporter and Insight Synthesizer in your team.
-  agent: manager
-
+    The report should be detailed, well-supported with evidence, and logically structured, providing valuable market insights 
+    and strategic recommendations to the client.
+  agent: reporter
 

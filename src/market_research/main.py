@@ -17,7 +17,7 @@ def run():
     """
     Run the crew.
     """
-    print(":) welcome welcome, we're a market research team focusing on cosmetic products for Gen Z in France. \nhow can we help you? :)\n\n")
+    
     product = input('enter your needed product again to confirm:\n ')
     need = input('tell me your needs: market research, customer insights, or product design?\n ')
     inputs = {

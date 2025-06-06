@@ -2,7 +2,7 @@
 #from dotenv import load_dotenv
 # load_dotenv()
 import os
-
+import time
 # lang_api_key = os.getenv('LANG_API_KEY')
 # langtrace.init(api_key = lang_api_key)
 
@@ -55,6 +55,8 @@ google_search = SerperDevTool(n_results=10, country='fr')
 # simple web scraping tool
 simple_scrape = ScrapeWebsiteTool(website_url='https://www.technavio.com/report/cosmetics-products-market-industry-in-france-analysis')
 ## should wait for the input
+print("\n\n:) welcome welcome, we're a market research team focusing on cosmetic products for Gen Z in France. \nhow can we help you? :)\n\n")
+time.sleep(2)
 product = input('enter your needed product:\n ')
 query = f"find information related to {product}"
 firesearch_tool = FirecrawlSearchTool(url='https://connect.in-cosmetics.com/',limit=2,query=query)
@@ -81,7 +83,8 @@ class MarketResearch():
             config=self.agents_config['market_researcher'], # type: ignore[index]
             verbose=True,
             allow_delegation=False,
-            tools=[firesearch_tool, google_search]  
+            tools=[firesearch_tool, google_search],
+            llm = big_general  
         )
 
     @agent
@@ -91,7 +94,8 @@ class MarketResearch():
             verbose=True,
             allow_delegation=False,
             knowledge_sources=[text_source], # type: ignore[index]
-            tools = [google_search]
+            tools = [google_search],
+            llm = general
 
         )
     @agent
@@ -99,7 +103,8 @@ class MarketResearch():
         return Agent(
             config=self.agents_config['product_designer'], # type: ignore[index]
             allow_delegation=True,
-            verbose=True
+            verbose=True,
+            llm = reasoner
         )
     
     @agent
@@ -107,17 +112,10 @@ class MarketResearch():
         return Agent(
             config=self.agents_config['reporter'], # type: ignore[index]
             verbose=True,
-            allow_delegation=True
-        )
-    @agent 
-    def manager(self) -> Agent:
-        return Agent(
-            role="Project Manager",
-            goal="Coordinate team efforts and ensure project success",
-            backstory="Experienced project manager skilled at delegation and quality control",
             allow_delegation=True,
-            verbose=True
-)
+            llm=big_big_general
+        )
+    
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
@@ -158,10 +156,9 @@ class MarketResearch():
         return Crew(
             agents=self.agents, # Automatically created by the @agent decorator
             # tasks=self.tasks, # Automatically created by the @task decorator
-            tasks = [self.design_innovation_task()],
+            tasks = [self.reporting_task()],
             # process=Process.hierarchical,
-            process=Process.sequential,
-            # manager_llm="gpt-4o",  # You can use any LLM here, but we recommend using a powerful one for the manager
+            process=Process.sequential,  # You can use Process.hierarchical for hierarchical execution
             verbose=True
             # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
