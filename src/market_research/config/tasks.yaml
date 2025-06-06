@@ -1,17 +1,65 @@
-research_task:
+market_research_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Use the internet to conduct a thorough market research in the {product} industry in France, 
+    focusing on the current market landscape, emerging trends.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A comprehensive market research report that includes but not limited to:
+    - Overview of the current market landscape
+    - Key players and their market shares
+    - Recent innovations and product launches
+    - Regulatory or environmental changes
+    - Opportunities and challenges in the competitive landscape
+  agent: market_researcher
+
+customer_analysis_task:
+  description: >
+    Analyze the behaviors, preferences, values, and purchasing motivations of Gen Z consumers in the {product} market in France.
+  expected_output: >
+    A detailed consumer analysis report that includes but not limited to:
+    - Brand perception and loyalty factors
+    - Product expectations and desired features
+    - Price sensitivity and purchasing triggers
+    - Social and environmental considerations influencing decisions
+  agent: customer_insight_analyst
+
+design_innovation_task:
+  description: >
+    Create potentially trendy product concepts in {product} industry based on market research by market_researcher and consumer insights by customer_insight_analyst.
+    collaboration
+    collaboration guidlines:
+      1. ask Cosmetic Market Researcher for the latest market research findings.
+      2. ask Customer Insight Analyst for the latest consumer insights.
+  expected_output: >
+    at least 2 innovative product concepts that include but not limited to:
+    - Product design sketches or prototypes
+    - Unique selling propositions tailored to Gen Z
+    - Recommendations for product features and functionalities
+    - Alignment with current market trends and consumer expectations
+  agent: product_designer
 
 reporting_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Summarize and consolidate the key findings, insights, and recommendations produced by the team into a clear, concise, and client-ready report.
+    collaborate with all agents to ensure that every insight is accurately represented.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    Deliver a market analysis report, customer insight report, or new product concept report based on the client's needs. The report should be detailed, well-supported with evidence, and logically structured, providing valuable market insights and strategic recommendations to the client.
+  agent: reporter
+
+
+management_task:
+  description: >
+    Coordinate Cosmetic Market Researcher, Customer Insight Analyst, Product Designer, and Reporter to deliver client's need:
+    
+    {query}
+
+    think carefully about the client's needs, and turn to relevant agents for the deliverable. 
+    
+    evaluate the output from Market Research Reporter and Insight Synthesizer based on the following criterion:
+    - align with the client's needs? 
+    - comprehensive with concise style?
+    if not, askt the Market Research Reporter and Insight Synthesizer to rewrite.
+  expected_output: >
+    a comprehensive report provided by the Market Research Reporter and Insight Synthesizer in your team.
+  agent: manager
+
+

@@ -17,11 +17,14 @@ def run():
     """
     Run the crew.
     """
-    topic = input('enter the topic you wanna know')
+    print(":) welcome welcome, we're a market research team focusing on cosmetic products for Gen Z in France. \nhow can we help you? :)\n\n")
+    product = input('enter your needed product again to confirm:\n ')
+    need = input('tell me your needs: market research, customer insights, or product design?\n ')
     inputs = {
-        'topic': topic,
-        'current_year': str(datetime.now().year)
+        'product': product,
+        'query':need
     }
+
     
     try:
         MarketResearch().crew().kickoff(inputs=inputs)

@@ -51,11 +51,13 @@ big_big_general = LLM(
 
 
 # tools
-google_search = SerperDevTool(n_results=5, country='fr')
+google_search = SerperDevTool(n_results=10, country='fr')
 # simple web scraping tool
 simple_scrape = ScrapeWebsiteTool(website_url='https://www.technavio.com/report/cosmetics-products-market-industry-in-france-analysis')
 ## should wait for the input
-# firesearch_tool = FirecrawlSearchTool(url='https://connect.in-cosmetics.com/',limit=15,query='')
+product = input('enter your needed product:\n ')
+query = f"find information related to {product}"
+firesearch_tool = FirecrawlSearchTool(url='https://connect.in-cosmetics.com/',limit=2,query=query)
 
 
 
@@ -74,37 +76,78 @@ class MarketResearch():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def researcher(self) -> Agent:
+    def market_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['market_researcher'], # type: ignore[index]
             verbose=True,
-            knowledge_sources = [text_source]
-            # tools=[google_search]  
+            allow_delegation=False,
+            tools=[firesearch_tool, google_search]  
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def customer_insight_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
-            verbose=True
+            config=self.agents_config['customer_insight_analyst'], # type: ignore[index]
+            verbose=True,
+            allow_delegation=False,
+            knowledge_sources=[text_source], # type: ignore[index]
+            tools = [google_search]
 
         )
-
+    @agent
+    def product_designer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['product_designer'], # type: ignore[index]
+            allow_delegation=True,
+            verbose=True
+        )
+    
+    @agent
+    def reporter(self) -> Agent:
+        return Agent(
+            config=self.agents_config['reporter'], # type: ignore[index]
+            verbose=True,
+            allow_delegation=True
+        )
+    @agent 
+    def manager(self) -> Agent:
+        return Agent(
+            role="Project Manager",
+            goal="Coordinate team efforts and ensure project success",
+            backstory="Experienced project manager skilled at delegation and quality control",
+            allow_delegation=True,
+            verbose=True
+)
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
     @task
-    def research_task(self) -> Task:
+    def market_research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config['market_research_task'], # type: ignore[index]
+        )
+    
+    @task
+    def customer_analysis_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['customer_analysis_task'], # type: ignore[index]
+        )
+    
+    @task
+    def design_innovation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['design_innovation_task'],
+            context = [self.market_research_task(), self.customer_analysis_task()]
         )
 
     @task
     def reporting_task(self) -> Task:
         return Task(
             config=self.tasks_config['reporting_task'], # type: ignore[index]
+            context = [self.market_research_task(), self.customer_analysis_task(), self.design_innovation_task()],
             output_file='report.md'
         )
+    
 
     @crew
     def crew(self) -> Crew:
@@ -114,8 +157,11 @@ class MarketResearch():
 
         return Crew(
             agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            # tasks=self.tasks, # Automatically created by the @task decorator
+            tasks = [self.design_innovation_task()],
+            # process=Process.hierarchical,
             process=Process.sequential,
-            verbose=True,
+            # manager_llm="gpt-4o",  # You can use any LLM here, but we recommend using a powerful one for the manager
+            verbose=True
             # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
