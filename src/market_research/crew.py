@@ -41,7 +41,7 @@ general = LLM(
 )
 
 big_general = LLM(
-    model="huggingface/Qwen/Qwen2.5-32B-Instruct"
+    model="huggingface/mistralai/Mixtral-8x7B-Instruct-v0.1"
 )
 
 big_big_general = LLM(
@@ -83,8 +83,8 @@ class MarketResearch():
             config=self.agents_config['market_researcher'], # type: ignore[index]
             verbose=True,
             allow_delegation=False,
-            tools=[firesearch_tool, google_search],
-            llm = big_general  
+            tools=[firesearch_tool, google_search, simple_scrape],
+            llm = general
         )
 
     @agent
@@ -105,6 +105,7 @@ class MarketResearch():
             allow_delegation=True,
             verbose=True,
             llm = reasoner
+            # llm = reasoner
         )
     
     @agent
